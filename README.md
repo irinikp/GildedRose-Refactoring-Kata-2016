@@ -6,14 +6,11 @@
   </head>
   <body>
   	<h1>Gilded Rose Refactoring Kata implementation</h1>
-
 	<div><a href="https://github.com/NotMyself/GildedRose" target="_blank">Original Source in C#</a></div>
 	<div><a href="https://github.com/emilybache/GildedRose-Refactoring-Kata" target="_blank/">Translated version I was based upon</a></div>
-
 	<p>
 		I have implemented a solution in both PHP and Ruby. Unit testing checks the same cases in both languages. However refactoring is different. 
 	</p>
-
 	<h2>Unit testing</h2>
 	<h3>Ruby</h3>
 	<p>
@@ -35,7 +32,6 @@
 		I implemented the same tests as in Ruby. Run the command <code>phpunit gilded_rose_test.php</code> under the test directory. <br/>
 		In order to choose which refactoring implementation you wish to check, uncomment line 4 or 5 on file <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/test/gilded_rose_test.php">gilded_rose_test.php</a>. 
 	</p>
-
 	<h2>Refactoring</h2>
 	<h3>Ruby</h2>
 	<p>
@@ -47,7 +43,6 @@
 	<p>
 		The Conjured ability is implemented in the module, as it is common for all items. 
 	</p>
-
 	<h3>PHP</h2>
 	<p>
 		Here rises the question of when does one stop refactoring. In my first implementation <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/src/gilded_rose.php">gilded_rose.php</a> I made a refactoring of the <code>GildedRose</code> class which would be my personal choice for a PHP implementation. I created simple functions for each action, easily readable so anyone could be able to edit them if necessary. 
@@ -55,7 +50,6 @@
 	<p>
 	However I have also implemented a second refactoring on <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/src/gilded_rose2.php">gilded_rose2.php</a> that I would choose if I suspected that the project needed to be flexible for many future extensions. I extended the <code>Item</code> class and added 2 more variables <code>category</code> (values <code>"regular"</code>, <code>"mature"</code> or <code>"legendary"</code>) and <code>is_conjured</code> 
 	</p>
-
 	<h2>Comments</h2>
 	<p>
 		In the initial code I was based on, the requirement <i>"Sulfuras" is a legendary item and as such its Quality is 80 and it never alters</i> was not implemented, and I haven't changed my implementation to support it yet. 

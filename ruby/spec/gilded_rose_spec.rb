@@ -1,5 +1,4 @@
 require_relative "../gilded_rose"
-#require_relative "../gilded_rose"
 require 'rspec'
 
 describe GildedRose do

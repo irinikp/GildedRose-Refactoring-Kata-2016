@@ -30,7 +30,7 @@
 	<h3>PHP</h3>
 	<p>
 		I implemented the same tests as in Ruby. Run the command <code>phpunit gilded_rose_test.php</code> under the test directory. <br/>
-		In order to choose which refactoring implementation you wish to check, uncomment line 4 or 5 on file <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/test/gilded_rose_test.php">gilded_rose_test.php</a>. 
+		In order to choose which refactoring implementation you wish to check, uncomment line 4 or 5 on file <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/blob/master/php/test/gilded_rose_test.php">gilded_rose_test.php</a>. 
 	</p>
 	<h2>Refactoring</h2>
 	<h3>Ruby</h2>
@@ -45,10 +45,10 @@
 	</p>
 	<h3>PHP</h2>
 	<p>
-		Here rises the question of when does one stop refactoring. In my first implementation <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/src/gilded_rose.php">gilded_rose.php</a> I made a refactoring of the <code>GildedRose</code> class which would be my personal choice for a PHP implementation. I created simple functions for each action, easily readable so anyone could be able to edit them if necessary. 
+		Here rises the question of when does one stop refactoring. In my first implementation <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/blob/master/php/src/gilded_rose.php">gilded_rose.php</a> I made a refactoring of the <code>GildedRose</code> class which would be my personal choice for a PHP implementation. I created simple functions for each action, easily readable so anyone could be able to edit them if necessary. 
 	</p>
 	<p>
-	However I have also implemented a second refactoring on <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/php/src/gilded_rose2.php">gilded_rose2.php</a> that I would choose if I suspected that the project needed to be flexible for many future extensions. I extended the <code>Item</code> class and added 2 more variables <code>category</code> (values <code>"regular"</code>, <code>"mature"</code> or <code>"legendary"</code>) and <code>is_conjured</code> 
+	However I have also implemented a second refactoring on <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/blob/master/php/src/gilded_rose2.php">gilded_rose2.php</a> that I would choose if I suspected that the project needed to be flexible for many future extensions. I extended the <code>Item</code> class and added 2 more variables <code>category</code> (values <code>"regular"</code>, <code>"mature"</code> or <code>"legendary"</code>) and <code>is_conjured</code> 
 	</p>
 	<h2>Comments</h2>
 	<p>

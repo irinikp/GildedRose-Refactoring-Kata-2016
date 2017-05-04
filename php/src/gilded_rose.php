@@ -2,7 +2,188 @@
 define("AGED_BRIE", "Aged Brie");
 define("BACKSTAGE", "Backstage passes to a TAFKAL80ETC concert");
 define("SULFURAS", "Sulfuras, Hand of Ragnaros");
+
+define("MATURE", "Mature");
+define("LEGEND", "Legendary");
+define("REGULAR", "Regular");
 define("CONJURED", "Conjured");
+
+class StringHandler {
+
+    public function wordContains($word, $substring) {
+        $pos = strpos($word, $substring);
+        if( $pos !== false && $pos >= 0 ) {
+            return true;
+        }
+        return false;
+    }
+}
+
+class GuildedRoseItem extends Item {
+
+    private $category;
+    private $top_quality;
+    private $nextDayFetch;
+    private const DEFAULT_TOP_QUALITY = 50;
+    private const ItemExpressions = array(
+            AGED_BRIE => MATURE, 
+            BACKSTAGE => MATURE,
+            SULFURAS => LEGEND);
+
+
+    public function __construct($name, $sell_in, $quality) {
+        parent::__CONSTRUCT($name, $sell_in, $quality);
+        $this->setTopQuality();
+        $this->categorizeItem($name);
+        $this->createDayFetcher();
+    }
+
+    private function setTopQuality() {
+        $this->top_quality = self::DEFAULT_TOP_QUALITY;
+    }
+
+    private function categorizeItem($name) {
+        $stringHandler = new StringHandler();
+        $this->category = REGULAR;
+        foreach( self::ItemExpressions as $specialExpression => $specialCategory ) {
+            if( $stringHandler->wordContains($this->name, $specialExpression) ) {
+                $this->category = $specialCategory;
+                break;
+            }
+        }
+    }
+
+    private function createDayFetcher() {
+        if( $this->category == REGULAR ) {
+            $this->nextDayFetch = new NormalNextDayFetcher($this->name, $this->sell_in, $this->quality, $this->top_quality);
+        } elseif( $this->category == MATURE ) {
+            $this->nextDayFetch = new MatureNextDayFetcher($this->name, $this->sell_in, $this->quality, $this->top_quality);
+        } elseif( $this->category == LEGEND ) {
+            $this->nextDayFetch = new LegendaryNextDayFetcher($this->name, $this->sell_in, $this->quality, $this->top_quality);
+        }
+    }
+
+    public function next_day() {
+        $this->sell_in = $this->nextDayFetch->next_sellin_day();
+        $this->quality = $this->nextDayFetch->next_quality_day();
+    }
+}
+
+abstract class NextDayFetcher {
+
+    protected $sell_in;
+    protected $quality;
+    protected $top_quality;
+    protected $name;
+
+    public function __construct($name, $sell_in, $quality, $top_quality) {
+        $this->name = $name;
+        $this->sell_in = $sell_in;
+        $this->quality = $quality;
+        $this->top_quality = $top_quality;
+    }
+
+
+    public function next_sellin_day() {
+        return $this->sell_in;
+    }
+
+    public function next_quality_day() {
+        return $this->quality;
+    }
+
+    protected function decreaseSellin($reductionAmount) {
+        $this->sell_in -= $reductionAmount;
+    }
+
+    protected function increaseQuality($increaseAmount) {
+        $this->quality -= $reductionAmount;
+    }
+
+    protected function decreaseQuality($reductionAmount) {
+        $this->quality -= $reductionAmount;
+    }
+
+    protected function addToQuality($value) {
+        $value = $this->adjustQualityValue($value);
+        $this->quality += $value;
+        $this->fixBottomQuality();
+        $this->fixTopQuality();
+    }
+
+    private function fixBottomQuality() {
+        if( $this->quality < 0 ) {
+            $this->setQuality(0);
+        }
+    }
+
+    private function fixTopQuality() {
+        if( $this->quality > $this->top_quality ) {
+            $this->setQuality($this->top_quality);
+        }
+    }
+
+    private function adjustQualityValue($value) {
+        if( $this->is_conjured($this->name) ) {
+            if( $value < 0 ) {
+                $value *= 2;
+            } else {
+                $value /= 2;
+            }
+        }
+        if( $this->sell_in < 0 ) {
+            $value *= 2;
+        }
+        return $value;
+    }
+
+    private function is_conjured($name) {
+        $stringHandler = new StringHandler();
+        return $stringHandler->wordContains($name, CONJURED);
+    }
+
+    protected function setQuality($value) {
+        $this->quality = $value;
+    }
+}
+
+class NormalNextDayFetcher extends NextDayFetcher {
+
+    public function next_sellin_day() {
+        $this->decreaseSellin(1);
+        return $this->sell_in;
+    }
+
+    public function next_quality_day() {
+        $this->addToQuality(-1);
+        return $this->quality;
+    }
+}
+
+class MatureNextDayFetcher extends NextDayFetcher {
+
+    public function next_sellin_day() {
+        $this->decreaseSellin(1);
+        return $this->sell_in;
+    }
+
+    public function next_quality_day() {
+        $this->addToQuality(1);
+        if( $this->name === BACKSTAGE ) {
+            if( $this->sell_in < 10 && $this->sell_in >= 5 ) {
+                $this->addToQuality(1);
+            } elseif( $this->sell_in < 5 && $this->sell_in >= 0 ) {
+                $this->addToQuality(2);
+            } elseif( $this->sell_in < 0 ) {
+                $this->setQuality(0);
+            }
+        }
+        return $this->quality;
+    }
+}
+
+class LegendaryNextDayFetcher extends NextDayFetcher {
+}
 
 class GildedRose {
 
@@ -12,94 +193,12 @@ class GildedRose {
         $this->items = $items;
     }
 
-    private function contains($word, $index) {
-        $pos = strpos($word, $index);
-        if( $pos !== false && $pos >= 0 ) {
-            return true;
-        }
-        return false;
-    }
-
-    private function is_conjured($item) {
-        $pos = strpos($item->name, CONJURED);
-        if( $pos !== false && $pos >= 0 ) {
-            return true;
-        }
-        return false;
-    }
-
-    private function setQuality($item, $value) {
-        $item->quality = $value;
-        return $item;
-    }
-
-    private function fixZeroQuality($item) {
-        if( $item->quality < 0 ) {
-            $item = $this->setQuality($item, 0);
-        }
-        return $item;
-    }
-
-    private function fixFiftyQuality($item) {
-        if( $item->quality > 50 ) {
-            $item = $this->setQuality($item, 50);
-        }
-        return $item;
-    }
-
-    private function adjustQualityValue($item, $value) {
-        if( $this->is_conjured($item) ) {
-            if( $value < 0 ) {
-                $value *= 2;
-            } else {
-                $value /= 2;
-            }
-        }
-        if($item->sell_in < 0){
-            $value *= 2;
-        }
-        return $value;
-    }
-
-    private function addToQuality($item, $value) {
-        $value = $this->adjustQualityValue($item, $value);
-        $item->quality += $value;
-        $item = $this->fixZeroQuality($item);
-        $item = $this->fixFiftyQuality($item);
-        return $item;
-    }
-
-    private function decreaseSellin($item) {
-        $item->sell_in -= 1;
-        return $item;
-    }
-
     function update_quality() {
         foreach ($this->items as $item) {
-            switch ($item->name) {
-                case AGED_BRIE: 
-                    $item = $this->decreaseSellin($item);
-                    $item = $this->addToQuality($item, 1);
-                    break;
-                case BACKSTAGE: 
-                    if( $item->sell_in > 10 ) {
-                        $item = $this->addToQuality($item, 1);
-                    } elseif( $item->sell_in <= 10 && $item->sell_in > 5 ) {
-                        $item = $this->addToQuality($item, 2);
-                    } elseif( $item->sell_in <= 5 && $item->sell_in > 0 ) {
-                        $item = $this->addToQuality($item, 3);
-                    } else {
-                        $item = $this->setQuality($item, 0);
-                    }
-                    $item = $this->decreaseSellin($item);
-                    break;
-                case SULFURAS: 
-                    break;
-                default: 
-                    $item = $this->decreaseSellin($item);
-                    $item = $this->addToQuality($item, -1);
-                    break;
-            }
+            $b = new GuildedRoseItem($item->name, $item->sell_in, $item->quality);
+            $b->next_day();
+            $item->sell_in = $b->sell_in;
+            $item->quality = $b->quality;
         }
     }
 }

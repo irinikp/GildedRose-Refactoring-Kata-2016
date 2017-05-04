@@ -45,10 +45,10 @@
 	</p>
 	<h3>PHP</h2>
 	<p>
-		Here rises the question of when does one stop refactoring. In my first implementation <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/blob/master/php/src/gilded_rose.php">gilded_rose.php</a> I made a refactoring of the <code>GildedRose</code> class which would be my personal choice for a PHP implementation. I created simple functions for each action, easily readable so anyone could be able to edit them if necessary. 
+		Updated 04-05-2017: I started refactoring my implementation. Still a long way to go. 
 	</p>
 	<p>
-	However I have also implemented a second refactoring on <a href="https://github.com/irinikp/GildedRose-Refactoring-Kata/blob/master/php/src/gilded_rose2.php">gilded_rose2.php</a> that I would choose if I suspected that the project needed to be flexible for many future extensions. I extended the <code>Item</code> class and added 2 more variables <code>category</code> (values <code>"regular"</code>, <code>"mature"</code> or <code>"legendary"</code>) and <code>is_conjured</code> 
+	Had I not done so thorough Unit Tests, I would never be able to start refactoring after so much time
 	</p>
 	<h2>Comments</h2>
 	<p>
